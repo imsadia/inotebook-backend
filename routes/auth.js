@@ -4,10 +4,11 @@ const User = require("../models/User");
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth');
 
 const JWT_SECRET = 'shhhhh';
 
-// Create a user using: POST "/api/auth/create". Loging not required.
+// ROUTE 1: Create a user using: POST "/api/auth/create". Loging not required.
 router.post(
   "/create",
   [
@@ -69,7 +70,7 @@ router.post(
 );
 
 
-// Create a user login using: POST "/api/auth/login". Loging not required.
+// ROUTE 2: Create a user login using: POST "/api/auth/login". Loging not required.
 router.post(
   "/login",
   [
@@ -119,6 +120,27 @@ router.post(
 
       // Return token to the user
       res.json({ token: token });
+    } catch (error) {
+      return res.status(500).json({ error: "Internal Server Error!", message: error.message });
+    }
+  }
+);
+
+module.exports = router;
+
+
+// ROUTE 3: Get a user details using: POST "/api/auth/login". Loging not required.
+router.get(
+  "/profile",
+  auth,
+  async (req, res) => {
+    // Try catch blocks to catch any exception if try block fails
+    try {
+      // Get user with the email in request from database
+      let user = await User.findById(req.user.id).select('-password');
+
+      // Return user details
+      res.send(user);
     } catch (error) {
       return res.status(500).json({ error: "Internal Server Error!", message: error.message });
     }
