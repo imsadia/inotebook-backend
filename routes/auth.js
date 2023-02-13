@@ -99,7 +99,6 @@ router.post(
 
       // If user exists then compare password
       const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
-      console.log(isPasswordCorrect);
 
       // If password is incorrect then return error
       if (!isPasswordCorrect) {
